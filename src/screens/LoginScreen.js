@@ -1,47 +1,77 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useContext } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../contexts/AuthContext';
+import { Input } from '../components/Input';
+import { Button } from '../components/Button';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
+import { spacing } from '../theme/spacing';
 
-export function LoginScreen({ navigation }) {
+export function LoginScreen() {
+  const navigation = useNavigation();
+  const { signIn } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Por enquanto só vai navegar para Home
-    navigation.replace('Home');
-  };
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
 
-  const handleRegister = () => {
-    // Será implementado depois
-    Alert.alert('Registro', 'Função será implementada em breve');
+    setLoading(true);
+    const result = await signIn(email, password);
+    setLoading(false);
+
+    if (!result.success) {
+      Alert.alert('Erro', result.error);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>WYN Mobile</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
+      <Text style={styles.title}>Bem-vindo ao WynMobile</Text>
+      <Text style={styles.subtitle}>Faça login para continuar</Text>
+
+      <Input
+        label="Email"
         value={email}
         onChangeText={setEmail}
+        placeholder="Digite seu email"
         keyboardType="email-address"
         autoCapitalize="none"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
+      <Input
+        label="Senha"
         value={password}
         onChangeText={setPassword}
+        placeholder="Digite sua senha"
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
+      <Button
+        title="Entrar"
+        onPress={handleLogin}
+        loading={loading}
+        style={styles.button}
+      />
 
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.registerText}>Não tem conta? Cadastre-se</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Register')}
+        style={styles.registerButton}
+      >
+        <Text style={styles.registerText}>
+          Não tem uma conta? <Text style={styles.registerTextBold}>Cadastre-se</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -50,46 +80,35 @@ export function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: spacing.padding,
+    backgroundColor: colors.background,
     justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    ...typography.h1,
+    color: colors.text,
     textAlign: 'center',
-    marginBottom: 40,
-    color: '#000',
+    marginBottom: spacing.paddingSmall,
   },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    fontSize: 16,
+  subtitle: {
+    ...typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.paddingLarge,
   },
   button: {
-    backgroundColor: '#FFD700',
-    height: 50,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
+    marginTop: spacing.padding,
   },
   registerButton: {
-    marginTop: 20,
-    padding: 10,
+    marginTop: spacing.paddingLarge,
+    alignItems: 'center',
   },
   registerText: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 16,
+    ...typography.body,
+    color: colors.textSecondary,
+  },
+  registerTextBold: {
+    ...typography.bodyBold,
+    color: colors.primary,
   },
 }); 

@@ -1,85 +1,144 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useContext } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../contexts/AuthContext';
+import { Input } from '../components/Input';
+import { Button } from '../components/Button';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
+import { spacing } from '../theme/spacing';
 
-export function RegisterScreen({ navigation }) {
+export function RegisterScreen() {
+  const navigation = useNavigation();
+  const { signUp } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [userType, setUserType] = useState('client'); // 'client' ou 'provider'
+  const [userType, setUserType] = useState('client');
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
-    // Por enquanto só navega para Home
-    navigation.replace('Home');
+  const handleRegister = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não coincidem');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    setLoading(true);
+    const result = await signUp(email, password, () => navigation.navigate('Login'));
+    setLoading(false);
+
+    if (!result.success) {
+      Alert.alert('Erro', result.error);
+    }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Criar Conta</Text>
+      <Text style={styles.subtitle}>Preencha os dados abaixo</Text>
 
-      <View style={styles.typeSelector}>
-        <TouchableOpacity 
-          style={[
-            styles.typeButton, 
-            userType === 'client' && styles.selectedType
-          ]}
-          onPress={() => setUserType('client')}
-        >
-          <Text style={styles.typeText}>Cliente</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[
-            styles.typeButton, 
-            userType === 'provider' && styles.selectedType
-          ]}
-          onPress={() => setUserType('provider')}
-        >
-          <Text style={styles.typeText}>Prestador</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Nome completo"
+      <Input
+        label="Nome"
         value={name}
         onChangeText={setName}
-        autoCapitalize="words"
+        placeholder="Digite seu nome completo"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
+      <Input
+        label="Email"
         value={email}
         onChangeText={setEmail}
+        placeholder="Digite seu email"
         keyboardType="email-address"
         autoCapitalize="none"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
+      <Input
+        label="Senha"
         value={password}
         onChangeText={setPassword}
+        placeholder="Digite sua senha"
         secureTextEntry
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmar senha"
+      <Input
+        label="Confirmar Senha"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
+        placeholder="Confirme sua senha"
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
+      <View style={styles.userTypeContainer}>
+        <Text style={styles.userTypeLabel}>Tipo de Usuário</Text>
+        <View style={styles.userTypeButtons}>
+          <TouchableOpacity
+            style={[
+              styles.userTypeButton,
+              userType === 'client' && styles.userTypeButtonActive,
+            ]}
+            onPress={() => setUserType('client')}
+          >
+            <Text
+              style={[
+                styles.userTypeButtonText,
+                userType === 'client' && styles.userTypeButtonTextActive,
+              ]}
+            >
+              Cliente
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.userTypeButton,
+              userType === 'provider' && styles.userTypeButtonActive,
+            ]}
+            onPress={() => setUserType('provider')}
+          >
+            <Text
+              style={[
+                styles.userTypeButtonText,
+                userType === 'provider' && styles.userTypeButtonTextActive,
+              ]}
+            >
+              Prestador
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      <TouchableOpacity 
-        style={styles.loginButton} 
-        onPress={() => navigation.navigate('Login')}
+      <Button
+        title="Cadastrar"
+        onPress={handleRegister}
+        loading={loading}
+        style={styles.button}
+      />
+
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.loginButton}
       >
-        <Text style={styles.loginText}>Já tem conta? Faça login</Text>
+        <Text style={styles.loginText}>
+          Já tem uma conta? <Text style={styles.loginTextBold}>Faça login</Text>
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -87,66 +146,66 @@ export function RegisterScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
+    flex: 1,
+    padding: spacing.padding,
+    backgroundColor: colors.background,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    ...typography.h1,
+    color: colors.text,
     textAlign: 'center',
-    marginBottom: 30,
-    color: '#000',
+    marginBottom: spacing.paddingSmall,
   },
-  typeSelector: {
+  subtitle: {
+    ...typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.paddingLarge,
+  },
+  userTypeContainer: {
+    marginBottom: spacing.padding,
+  },
+  userTypeLabel: {
+    ...typography.body,
+    color: colors.text,
+    marginBottom: spacing.paddingSmall,
+  },
+  userTypeButtons: {
     flexDirection: 'row',
-    marginBottom: 20,
+    justifyContent: 'space-between',
   },
-  typeButton: {
+  userTypeButton: {
     flex: 1,
-    padding: 15,
-    marginHorizontal: 5,
-    borderRadius: 8,
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
+    padding: spacing.padding,
+    borderRadius: spacing.borderRadius,
+    backgroundColor: colors.card,
+    marginHorizontal: spacing.paddingSmall,
   },
-  selectedType: {
-    backgroundColor: '#FFD700',
+  userTypeButtonActive: {
+    backgroundColor: colors.primary,
   },
-  typeText: {
-    fontSize: 16,
-    fontWeight: '500',
+  userTypeButtonText: {
+    ...typography.body,
+    color: colors.text,
+    textAlign: 'center',
   },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    fontSize: 16,
+  userTypeButtonTextActive: {
+    color: colors.text,
+    ...typography.bodyBold,
   },
   button: {
-    backgroundColor: '#FFD700',
-    height: 50,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
+    marginTop: spacing.padding,
   },
   loginButton: {
-    marginTop: 20,
-    padding: 10,
+    marginTop: spacing.paddingLarge,
+    alignItems: 'center',
   },
   loginText: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 16,
+    ...typography.body,
+    color: colors.textSecondary,
+  },
+  loginTextBold: {
+    ...typography.bodyBold,
+    color: colors.primary,
   },
 }); 
