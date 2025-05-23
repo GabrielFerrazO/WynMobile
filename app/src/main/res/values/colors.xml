@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#F57C00</color> <!-- Laranja -->
+    <color name="onPrimary">#FFFFFF</color> <!-- Texto em botões -->
+    <color name="backgroundDark">#424242</color> <!-- Fundo escuro -->
+    <color name="textPrimary">#000000</color> <!-- Textos -->
+    <color name="white">#FFFFFF</color> <!-- Fundo claro -->
+</resources>

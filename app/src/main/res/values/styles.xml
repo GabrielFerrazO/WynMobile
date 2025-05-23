@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Tema geral do aplicativo -->
+    <style name="Theme.WYN" parent="Theme.AppCompat.DayNight.NoActionBar">
+
+        <!-- Paleta de cores -->
+        <item name="colorPrimary">#FF6D00</item>         <!-- Laranja -->
+        <item name="colorPrimaryDark">#E65100</item>     <!-- Laranja escuro -->
+        <item name="colorAccent">#FFC107</item>          <!-- Amarelo para destaques -->
+
+        <!-- Estilo padrão de fundo -->
+        <item name="android:windowBackground">#121212</item> <!-- Fundo escuro -->
+        <item name="android:buttonStyle">@style/ButtonStyle</item> <!-- Estilo global para botões -->
+    </style>
+
+    <!-- Estilo para botões -->
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:backgroundTint">#FF6D00</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Estilo para textos maiores -->
+    <style name="TitleText" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+</resources>

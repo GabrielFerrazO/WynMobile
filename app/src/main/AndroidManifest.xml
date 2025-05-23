@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.WYN">
+
+        <!-- Tela inicial: LoginActivity -->
+        <activity
+            android:name="com.example.wyn.Screens.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Tela de cadastro -->
+        <activity android:name="com.example.wyn.Screens.RegisterActivity" />
+
+        <!-- Tela principal após login -->
+        <activity android:name="com.example.wyn.Screens.HomeActivity" />
+
+        <activity android:name="com.example.wyn.Screens.ProfileActivity" />
+        <activity android:name="com.example.wyn.Screens.SettingsActivity" />
+        <activity android:name="com.example.wyn.Screens.AboutActivity" />
+        <activity android:name="com.example.wyn.Screens.ServiceListActivity" />
+        <activity android:name="com.example.wyn.Screens.ServiceDetailActivity" />
+        <activity android:name="com.example.wyn.Screens.ChatActivity" />
+        <activity android:name="com.example.wyn.Screens.ReviewActivity" />
+        <activity android:name="com.example.wyn.Screens.PaymentActivity" />
+
+
+
+    </application>
+
+</manifest>
